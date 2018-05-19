@@ -9,11 +9,19 @@ MetaTileGenerator is a tool to help with the creation of meta tiles from standar
 TODO
 
 ### How to use
+(Note: Gem is not published yet)
+```
+gem install meta_tile_generator
+```
+or, in your `Gemfile`
+```
+gem 'meta_tile_generator`
+```
 
 From the command line:
 ```shell
-./bin/meta_tile_generator path/to/image.png 16
-./bin/meta_tile_generator path/to/image.png 16 0 16 # X, Y Starting Coordinates within larger image
+meta_tile_generator path/to/image.png 16
+meta_tile_generator path/to/image.png 16 0 16 # X, Y Starting Coordinates within larger image
 ```
 
 Within a project:
@@ -23,5 +31,4 @@ tile_width = 32
 image_filepath = "path/to/image.png"
 @meta_tile_generator = MetaTileGenerator.new(tile_width)
 @meta_tile_generator.create_tileset_from(image_filepath)
-
 ```

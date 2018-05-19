@@ -37,7 +37,7 @@ class MetaTileGenerator
     meta_tiles = meta_tiles_from(image_filepath, x_offset, y_offset)
     generated_tileset = ChunkyPNG::Image.new(@generated_tileset_width, @generated_tileset_height)
     cursor = {x: 0, y: 0}
-    generated_tile_combinations.each_with_index do |metatiles, index|
+    generated_tile_combinations.each do |metatiles|
       upper_left, upper_right, lower_left, lower_right = metatiles
       new_tile = ChunkyPNG::Image.new(@tile_width, @tile_height)
       new_tile.compose!(meta_tiles[upper_left], 0, 0)
@@ -79,20 +79,6 @@ class MetaTileGenerator
       [x * @meta_tile_width, y * @meta_tile_height]
     end
   end
-
-  # metatile_x_y_positions = [
-  #   [0, 0],  [8, 0],  [16, 0],  [24, 0],  [32, 0],  [40, 0],
-  #   [0, 8],  [8, 8],  [16, 8],  [24, 8],  [32, 8],  [40, 8],
-  #   [0, 16], [8, 16], [16, 16], [24, 16], [32, 16], [40, 16],
-  #   [0, 24], [8, 24], [16, 24], [24, 24], [32, 24], [40, 24]
-  # ]
-
-  metatile_x_y_positions = [
-    [  0 ],  [  1 ],  [  2 ],   [  3 ],   [  4 ],   [  5 ],
-    [  6 ],  [  7 ],  [  8 ],   [  9 ],   [  10],   [  11],
-    [  12],  [  13],  [  14],   [  15],   [  16],   [  17],
-    [  18],  [  19],  [  20],   [  21],   [  22],   [  23]
-  ]
 
   def generated_tile_combinations
     [
