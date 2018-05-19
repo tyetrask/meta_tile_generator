@@ -7,9 +7,9 @@ Gem::Specification.new do |s|
   s.authors     = ["Tye Trask"]
   s.homepage    = 'https://github.com/tyetrask/meta_tile_generator'
   s.files       = [
-    "lib/meta_tile_generator.rb"
+    "lib/meta_tile_generator.rb",
+    "lib/meta_tile_generator/version.rb"
   ]
-  # s.homepage    = 'http://rubygems.org/gems/meta_tile_generator'
   s.license       = 'MIT'
   s.bindir = 'bin'
   s.executables << 'meta_tile_generator'
