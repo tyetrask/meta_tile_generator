@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+require 'meta_tile_generator'
+
+arguments = ARGV
+input_filepath = arguments[0]
+tile_width = arguments[1].to_i
+if arguments.length >= 4
+  x_offset = arguments[2].to_i
+  y_offset = arguments[3].to_i
+end
+output_dir = File.dirname(input_filepath)
+output_filename = "#{File.basename(input_filepath, ".*")}_super#{File.extname(input_filepath)}"
+output_filepath = File.join(output_dir, output_filename)
+
+@meta_tile_generator = MetaTileGenerator.new(tile_width)
+@meta_tile_generator.create_tileset_from(output_filepath, x_offset, y_offset)
