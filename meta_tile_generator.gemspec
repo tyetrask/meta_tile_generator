@@ -3,9 +3,9 @@ Gem::Specification.new do |s|
   s.version     = '0.0.0'
   s.date        = '2018-05-19'
   s.summary     = "MetaTileGenerator"
-  s.description = "A tool to automate the creation of tiles from metatiles"
+  s.description = "A tool to automate the creation of tilesets from metatiles"
   s.authors     = ["Tye Trask"]
-  s.email       = 'ttrask@gmail.com'
+  s.homepage    = 'https://github.com/tyetrask/meta_tile_generator'
   s.files       = [
     "lib/meta_tile_generator.rb"
   ]
