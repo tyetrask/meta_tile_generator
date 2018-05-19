@@ -2,8 +2,6 @@ require 'chunky_png'
 
 class MetaTileGenerator
 
-  DEFAULT_TILE_WIDTH = 16
-
   attr_accessor :tile_width
                 :tile_height
                 :meta_tile_width
@@ -13,7 +11,7 @@ class MetaTileGenerator
                 :generated_tileset_width
                 :generated_tileset_height
 
-  def initialize(tile_width=DEFAULT_TILE_WIDTH)
+  def initialize(tile_width)
     @tile_width = tile_width
     @tile_height = tile_width
     @meta_tile_width = @tile_width / 2
@@ -26,34 +24,38 @@ class MetaTileGenerator
 
   def meta_tiles_from(image_filepath, x_offset=nil, y_offset=nil)
     base_tileset = base_tileset_for(image_filepath, x_offset, y_offset)
-    metatile_collection = {}
-    metatile_x_y_positions.each_with_index do |x_y_position, index|
+    meta_tiles = {}
+    meta_tile_positions.each_with_index do |x_y_position, index|
       x, y = x_y_position
       tile = base_tileset.crop(x, y, @meta_tile_width, @meta_tile_height)
-      metatile_collection["tile_#{index}"] = tile
+      meta_tiles["tile_#{index}"] = tile
     end
-    metatile_collection
+    meta_tiles
   end
 
-  def create_tileset_from(image_filepath, x_offset, y_offset)
-    metatile_collection = meta_tiles_from(image_filepath, x_offset, y_offset)
-    generated_tileset = hunkyPNG::Image.new(@generated_tileset_width, @generated_tileset_height)
+  def create_tileset_from(image_filepath,  x_offset, y_offset)
+    meta_tiles = meta_tiles_from(image_filepath, x_offset, y_offset)
+    generated_tileset = ChunkyPNG::Image.new(@generated_tileset_width, @generated_tileset_height)
     cursor = {x: 0, y: 0}
-    tile_combinations.each_with_index do |metatiles, index|
+    generated_tile_combinations.each_with_index do |metatiles, index|
       upper_left, upper_right, lower_left, lower_right = metatiles
-      new_tile = ChunkyPNG::Image.new(TILE_WIDTH, TILE_HEIGHT)
-      new_tile.compose!(metatile_collection[upper_left], 0, 0)
-      new_tile.compose!(metatile_collection[upper_right], @meta_tile_width, 0)
-      new_tile.compose!(metatile_collection[lower_left], 0, @meta_tile_height)
-      new_tile.compose!(metatile_collection[lower_right], @meta_tile_width, @meta_tile_height)
-      output_image.compose!(new_tile, cursor[:x], cursor[:y])
+      new_tile = ChunkyPNG::Image.new(@tile_width, @tile_height)
+      new_tile.compose!(meta_tiles[upper_left], 0, 0)
+      new_tile.compose!(meta_tiles[upper_right], @meta_tile_width, 0)
+      new_tile.compose!(meta_tiles[lower_left], 0, @meta_tile_height)
+      new_tile.compose!(meta_tiles[lower_right], @meta_tile_width, @meta_tile_height)
+      generated_tileset.compose!(new_tile, cursor[:x], cursor[:y])
       cursor[:x] += @tile_width
       if cursor[:x] >= @generated_tileset_width
         cursor[:x] = 0
         cursor[:y] += @tile_height
       end
     end
-    save_image(output_image, output_filename)
+    generated_tileset
+  end
+
+  def self.save_image(image, output_filepath)
+    image.to_datastream.save(output_filepath)
   end
 
   private
@@ -64,10 +66,6 @@ class MetaTileGenerator
       base_tileset.crop!(x_offset, y_offset, @base_tileset_width, @base_tileset_height)
     end
     base_tileset
-  end
-
-  def save_image(image, output_filepath)
-    image.to_datastream.save(output_filepath)
   end
 
   def meta_tile_positions
@@ -82,12 +80,12 @@ class MetaTileGenerator
     end
   end
 
-  metatile_x_y_positions = [
-    [0, 0],  [8, 0],  [16, 0],  [24, 0],  [32, 0],  [40, 0],
-    [0, 8],  [8, 8],  [16, 8],  [24, 8],  [32, 8],  [40, 8],
-    [0, 16], [8, 16], [16, 16], [24, 16], [32, 16], [40, 16],
-    [0, 24], [8, 24], [16, 24], [24, 24], [32, 24], [40, 24]
-  ]
+  # metatile_x_y_positions = [
+  #   [0, 0],  [8, 0],  [16, 0],  [24, 0],  [32, 0],  [40, 0],
+  #   [0, 8],  [8, 8],  [16, 8],  [24, 8],  [32, 8],  [40, 8],
+  #   [0, 16], [8, 16], [16, 16], [24, 16], [32, 16], [40, 16],
+  #   [0, 24], [8, 24], [16, 24], [24, 24], [32, 24], [40, 24]
+  # ]
 
   metatile_x_y_positions = [
     [  0 ],  [  1 ],  [  2 ],   [  3 ],   [  4 ],   [  5 ],
@@ -97,7 +95,7 @@ class MetaTileGenerator
   ]
 
   def generated_tile_combinations
-    tile_combinations = [
+    [
       # Row 0
       ["tile_16", "tile_17", "tile_22", "tile_23"],
       ["tile_0", "tile_3", "tile_18", "tile_21"],
@@ -117,59 +115,41 @@ class MetaTileGenerator
       ["tile_14", "tile_15", "tile_20", "tile_21"],
       ["tile_2", "tile_3", "tile_8", "tile_9"],
       # Row 2
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
+      ["tile_4", "tile_14", "tile_10", "tile_8"],
+      ["tile_2", "tile_1", "tile_10", "tile_11"],
+      ["tile_12", "tile_5", "tile_6", "tile_11"],
+      ["tile_4", "tile_5", "tile_20", "tile_19"],
+      ["tile_4", "tile_5", "tile_10", "tile_11"],
+      ["tile_4", "tile_5", "tile_14", "tile_11"],
+      ["tile_7", "tile_5", "tile_10", "tile_11"],
+      ["tile_13", "tile_5", "tile_7", "tile_11"],
       # Row 3
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
+      ["tile_14", "tile_15", "tile_10", "tile_15"],
+      ["tile_1", "tile_1", "tile_14", "tile_11"],
+      ["tile_12", "tile_13", "tile_6", "tile_11"],
+      ["tile_8", "tile_5", "tile_20", "tile_19"],
+      ["tile_4", "tile_5", "tile_10", "tile_13"],
+      ["tile_4", "tile_5", "tile_13", "tile_14"],
+      ["tile_7", "tile_5", "tile_10", "tile_8"],
+      ["tile_7", "tile_5", "tile_13", "tile_14"],
       # Row 4
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
+      ["tile_4", "tile_15", "tile_8", "tile_9"],
+      ["tile_2", "tile_1", "tile_10", "tile_13"],
+      ["tile_12", "tile_5", "tile_6", "tile_7"],
+      ["tile_4", "tile_14", "tile_20", "tile_19"],
+      ["tile_4", "tile_7", "tile_10", "tile_11"],
+      ["tile_4", "tile_7", "tile_8", "tile_11"],
+      ["tile_7", "tile_8", "tile_10", "tile_11"],
+      ["tile_7", "tile_8", "tile_13", "tile_11"],
       # Row 5
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      # Row 6
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      # Row 7
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"],
-      ["tile_", "tile_", "tile_", "tile_"]
+      ["tile_14", "tile_15", "tile_8", "tile_9"],
+      ["tile_1", "tile_2", "tile_7", "tile_8"],
+      ["tile_12", "tile_13", "tile_6", "tile_7"],
+      ["tile_14", "tile_13", "tile_19", "tile_20"],
+      ["tile_4", "tile_7", "tile_10", "tile_13"],
+      ["tile_4", "tile_8", "tile_13", "tile_14"],
+      ["tile_7", "tile_8", "tile_10", "tile_14"],
+      ["tile_7", "tile_8", "tile_13", "tile_14"]
     ]
   end
 
