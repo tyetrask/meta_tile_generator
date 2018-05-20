@@ -11,6 +11,9 @@ end
 output_dir = File.dirname(input_filepath)
 output_filename = "#{File.basename(input_filepath, ".*")}_generated#{File.extname(input_filepath)}"
 output_filepath = File.join(output_dir, output_filename)
+if File.exist?(output_filepath)
+  output_filepath.gsub!("_generated", "_generated-1")
+end
 
 @meta_tile_generator = MetaTileGenerator.new(tile_width)
 image = @meta_tile_generator.create_tileset_from(input_filepath, x_offset, y_offset)

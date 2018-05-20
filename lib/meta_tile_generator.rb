@@ -92,7 +92,7 @@ class MetaTileGenerator
       ["tile_4", "tile_9", "tile_20", "tile_21"],
       ["tile_1", "tile_3", "tile_10", "tile_15"],
       # Row 1
-      ["tile_0", "tile_3", "tile_6", "tile_14"],
+      ["tile_0", "tile_3", "tile_6", "tile_15"],
       ["tile_0", "tile_1", "tile_18", "tile_20"],
       ["tile_12", "tile_9", "tile_18", "tile_21"],
       ["tile_2", "tile_3", "tile_19", "tile_21"],
@@ -101,7 +101,7 @@ class MetaTileGenerator
       ["tile_14", "tile_15", "tile_20", "tile_21"],
       ["tile_2", "tile_3", "tile_8", "tile_9"],
       # Row 2
-      ["tile_4", "tile_14", "tile_10", "tile_8"],
+      ["tile_4", "tile_15", "tile_10", "tile_9"],
       ["tile_2", "tile_1", "tile_10", "tile_11"],
       ["tile_12", "tile_5", "tile_6", "tile_11"],
       ["tile_4", "tile_5", "tile_20", "tile_19"],
